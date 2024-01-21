@@ -53,4 +53,27 @@ File name(s) for task 3.
 2-first_9_tasks-8.png     
 2-first_9_tasks-9.png
 
+=========================
+File name(s) for task 3.
+=========================
 
+3-first_9_tasks-1.png
+3-first_9_tasks-2.png
+3-first_9_tasks-3.png
+3-first_9_tasks-4.png
+3-first_9_tasks-5.png
+3-first_9_tasks-6.png
+3-first_9_tasks-7.png
+3-first_9_tasks-8.png
+3-first_9_tasks-9.png
+
+==========================
+File name(s) for task 4.
+==========================
+
+4-first_9_tasks-1.png
+4-first_9_tasks-2.png
+4-first_9_tasks-3.png
+4-first_9_tasks-4.png
+4-first_9_tasks-5.png
+4-first_9_tasks-6.png
