@@ -1,4 +1,4 @@
-#!/usr/bin/env bash                                                                                                                 
+#!/usr/bin/env/bash                                                                                                                 
 # Prints "Best School" 10 times using an until loop.                                                                              
 
 i=0
@@ -8,4 +8,3 @@ do
   echo "Best School"
   (( count++ ))
 done
-
