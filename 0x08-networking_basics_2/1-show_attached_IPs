@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Saving all the IP addresses
+ip_addresses=$(hostname -I)
+
+# Splitting them by space
+ip_addresses=("${ip_addresses// / }")
+
+# Print each IPv4 address line by line
+echo "LIST OF IP ADDRESSES"
+for ip in "${ip_addresses[@]}"; do
+	if [[ $ip == *"."* ]]; then
+		printf "%s\n" "$ip"
+	fi
+done
