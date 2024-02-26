@@ -1,27 +1,17 @@
 #!/usr/bin/env bash
+# Configures an Ubuntu server as follows:
+#   - localhost resolves to 127.0.0.2
+#   - facebook.com resolves to 8.8.8.8
 
-# Check if the script is run with root privileges
-if [ "$EUID" -ne 0 ]; then
-	echo "Please run the script with sudo or as root."
-	exit 1
-fi
+cp /etc/hosts ~/hosts.new
+echo "127.0.0.2		localhost" > ~/hosts.new
+echo "8.8.8.8		facebook.com" >> ~/hosts.new
+cp -f ~/hosts.new /etc/hosts#!/usr/bin/env bash
+# Configures an Ubuntu server as follows:
+#   - localhost resolves to 127.0.0.2
+#   - facebook.com resolves to 8.8.8.8
 
-# Define the desired IP and host mappings
-localhost_mapping="127.0.0.2 localhost"
-facebook_mapping="8.8.8.8 facebook.com"
-
-# Check if the entries already exist in /etc/hosts
-if grep -qF "$localhost_mapping" /etc/hosts && grep -qF "$facebook_mapping" /etc/hosts; then
-	echo "Hosts file is already configured. Exiting."
-	exit 0
-fi
-
-# Backup the current /etc/hosts file
-cp /etc/hosts /etc/hosts.bak
-
-# Add or update the entries in /etc/hosts
-echo "$localhost_mapping" >> /etc/hosts
-echo "$facebook_mapping" >> /etc/hosts
-
-echo "Hosts file configured successfully."
-
+cp /etc/hosts ~/hosts.new
+echo "127.0.0.2		localhost" > ~/hosts.new
+echo "8.8.8.8		facebook.com" >> ~/hosts.new
+cp -f ~/hosts.new /etc/hosts
