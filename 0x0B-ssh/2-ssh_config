@@ -1,0 +1,14 @@
+# Config w/Puppet
+
+file { '/home/wldrms/.ssh/config':
+  ensure  => present,
+  mode    => '0600',
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  content => "52.73.34.195
+    HostName 52.73.34.195
+    User ubuntu
+    IdentityFile ~/.ssh/school
+    PasswordAuthentication no
+",
+}
