@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Setup nginx server
+
+# Update package lists
+apt-get update
+
+# Install Nginx
+apt-get -y install nginx
+
+# Allow Nginx through the firewall
+ufw allow 'Nginx HTTP'
+
+# Change permissions of /var/www/html/ to 777 recursively
+chmod 777 -R /var/www/html/
+
+# Create a simple index.html file
+echo "Hello World!" > /var/www/html/index.html
+
+# Start Nginx service
+service nginx start
+
