@@ -4,4 +4,4 @@ private_key="school"
 bits=4096
 passphrase="betty"
 
-ssh-keygen -t rsa -b "$bits" -f "$private_key" -N "$passphrase"
+ssh-keygen -t rsa -b "$bits" -P "$passphrase" -f "$private_key"
