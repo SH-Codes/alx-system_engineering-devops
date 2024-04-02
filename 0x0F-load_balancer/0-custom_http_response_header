@@ -1,104 +1,90 @@
 #!/usr/bin/env bash
-# Script to set up a basic web server environment with Nginx
+# duplicate web-01 to web-02
+# these scripts are an upgrade from the web-server scripts...
 
-# Colors
+# uncomment to see the script run in action
+#set -x
+
+# colors
 blue='\e[1;34m'
 brown='\e[0;33m'
 green='\e[1;32m'
 reset='\033[0m'
 
-# Function to display messages in blue color
-blue_echo() {
-    echo -e "${blue}$1${reset}"
+echo -e "${blue}Updating and doing some minor checks...${reset}\n"
+
+function install() {
+	command -v "$1" &> /dev/null
+
+	#shellcheck disable=SC2181
+	if [ $? -ne 0 ]; then
+		echo -e "	Installing: ${brown}$1${reset}\n"
+		sudo apt-get update -y -qq && \
+			sudo apt-get install -y "$1" -qq
+		echo -e "\n"
+	else
+		echo -e "	${green}${1} is already installed.${reset}\n"
+	fi
 }
 
-# Function to display messages in brown color
-brown_echo() {
-    echo -e "${brown}$1${reset}"
-}
+install nginx #install nginx
 
-# Function to display messages in green color
-green_echo() {
-    echo -e "${green}$1${reset}"
-}
+echo -e "\n${blue}Setting up some minor stuff.${reset}\n"
 
-# Function to install packages
-install_package() {
-    local package_name="$1"
-    blue_echo "Installing: ${brown}$package_name${reset}"
-    sudo apt-get update -y -qq && \
-    sudo apt-get install -y "$package_name" -qq
-}
+# allowing nginx on firewall
+sudo ufw allow 'Nginx HTTP'
 
-# Function to set up Nginx
-setup_nginx() {
-    if ! command -v nginx &>/dev/null; then
-        install_package nginx
-    else
-        green_echo "Nginx is already installed."
-    fi
+# Give the user ownership to website files for easy editing
+if [ -d "/var/www" ]; then
+	sudo chown -R "$USER":"$USER" /var/www
+	sudo chmod -R 755 /var/www
+else
+	sudo mkdir -p /var/www
+	sudo chown -R "$USER":"$USER" /var/www
+	sudo chmod -R 755 /var/www
+fi
 
-    # Allowing Nginx through the firewall
-    sudo ufw allow 'Nginx HTTP'
+# create directories if not present
+for dir in /var/www/{html,error}; do
+	if ! [ -d "$dir" ]; then
+		mkdir -p "$dir"
+	fi
+done
 
-    # Set permissions for website files
-    local www_dir="/var/www"
-    if [ ! -d "$www_dir" ]; then
-        sudo mkdir -p "$www_dir"
-    fi
-    sudo chown -R "$USER":"$USER" "$www_dir"
-    sudo chmod -R 755 "$www_dir"
+# creating new index
+echo "Hello World!" > /var/www/html/index.html
 
-    # Create directories if not present
-    for dir in "$www_dir"/{html,error}; do
-        if [ ! -d "$dir" ]; then
-            sudo mkdir -p "$dir"
-        fi
-    done
+# create new error page
+echo "Ceci n'est pas une page" > /var/www/html/error_404.html
 
-    # Create new index
-    echo "Hello World!" | sudo tee "$www_dir"/html/index.html >/dev/null
+# backup default server config file
+sudo cp /etc/nginx/sites-enabled/default nginx-sites-enabled_default.backup
 
-    # Create new error page
-    echo "Ceci n'est pas une page" | sudo tee "$www_dir"/html/error_404.html >/dev/null
-
-    # Backup default server config file
-    sudo cp /etc/nginx/sites-enabled/default /etc/nginx/sites-enabled/default.backup
-
-    # Create and apply custom server configuration
-    local server_config="\
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-    add_header X-Served-By \$hostname;
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-    error_page 404 /error_404.html;
-    location = /error_404.html {
-        internal;
-    }
+server_config=\
+"server {
+		listen 80 default_server;
+		listen [::]:80 default_server;
+		root /var/www/html;
+		index index.html index.htm index.nginx-debian.html
+		server_name_;
+		add_header X-Served-By \$hostname;
+		location / {
+			try_files \$uri \$uri/ =404;
+		}
+		if (\$request_filename ~ redirect_me){
+			rewrite ^ https://th3-gr00t.tk/ permanent;
+		}
+		error_page 404 /error_404.html;
+		location = /error_404.html {
+			internal;
+		}
 }"
-    echo "$server_config" | sudo tee /etc/nginx/sites-enabled/default >/dev/null
 
-    # Restart Nginx service
-    if sudo systemctl is-active --quiet nginx; then
-        sudo systemctl restart nginx
-    else
-        sudo systemctl start nginx
-    fi
+#shellcheck disable=SC2154
+echo "$server_config" | sudo dd status=none of=/etc/nginx/sites-enabled/default
 
-    green_echo "Nginx setup completed."
-}
-
-# Main function
-main() {
-    blue_echo "Updating and doing some minor checks..."
-    setup_nginx
-}
-
-# Run the main function
-main
+if [ "$(pgrep -c nginx)" -le 0 ]; then
+	sudo service nginx start
+else
+	sudo service nginx restart
+fi
