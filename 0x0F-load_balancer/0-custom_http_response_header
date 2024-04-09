@@ -1,36 +1,26 @@
 #!/usr/bin/env bash
-# Displays information about subdomains.
+# Configures Nginx with a custom header for both  web-01 and web-02 when an http request is sent 
+# The name of the custom HTTP header must be X-Served-By
+# The value of the custom HTTP header must be the hostname of the server Nginx is running on(either web-01 or web-02)
 
-# Colors for terminal output
-blue='\e[1;34m'
-brown='\e[0;33m'
-reset='\033[0m'
+sudo apt-get update
 
-# Predefined subdomains
-subdomains=( "www" "lb-01" "web-01" "web-02" )
+sudo apt-get -y install nginx
 
-# Function to fetch DNS information for a subdomain
-dig_cmd () {
-    local sub="$2"
-    local INFO
-    INFO=$(dig "$sub.$1" +short | head -n1)
-    if [ -n "$INFO" ]; then
-        local IP=$(echo "$INFO" | awk '{print $1}')
-        local RECORD=$(echo "$INFO" | awk '{print $2}')
-        echo -e "${brown}The subdomain ${blue}$sub${brown} is a ${blue}$RECORD${brown} record and points to ${blue}$IP${reset}"
-    else
-        echo -e "${brown}No information found for subdomain ${blue}$sub${reset}"
-    fi
-}
+sudo ufw allow 'Nginx HTTP'
 
-# Main script
-if [ $# -eq 1 ]; then
-    for sub in "${subdomains[@]}"; do
-        dig_cmd "$1" "$sub"
-    done
-elif [ $# -eq 2 ]; then
-    dig_cmd "$1" "$2"
-else
-    echo "Usage: $0 <domain> [subdomain]"
-fi
+sudo mkdir -p /var/www/html
 
+sudo chmod -R 755 /var/www
+
+echo 'Hello World!' | sudo tee  /var/www/html/index.html
+
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+
+string_for_replacement="server_name _;\n\tadd_header X-Served-By \$hostname;\n\trewrite ^\/redirect_me https:\/\/www.html2md.software permanent;"
+sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+string_for_replacement="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
+sudo sed -i "s/listen 80 default_server;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+sudo service nginx restart
