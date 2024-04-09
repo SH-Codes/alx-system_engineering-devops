@@ -1,22 +1,36 @@
 #!/usr/bin/env bash
-# get domain name and dns record type
+# Displays information about subdomains.
 
-get_record_info() {
-    domain=$1
-    subdomain=$2
-    record_type=$(dig +short $subdomain.$domain | awk '{print $5}')
-    destination=$(dig +short $subdomain.$domain | awk '{print $NF}')
-    echo "The subdomain $subdomain is a $record_type record and points to $destination"
+# Colors for terminal output
+blue='\e[1;34m'
+brown='\e[0;33m'
+reset='\033[0m'
+
+# Predefined subdomains
+subdomains=( "www" "lb-01" "web-01" "web-02" )
+
+# Function to fetch DNS information for a subdomain
+dig_cmd () {
+    local sub="$2"
+    local INFO
+    INFO=$(dig "$sub.$1" +short | head -n1)
+    if [ -n "$INFO" ]; then
+        local IP=$(echo "$INFO" | awk '{print $1}')
+        local RECORD=$(echo "$INFO" | awk '{print $2}')
+        echo -e "${brown}The subdomain ${blue}$sub${brown} is a ${blue}$RECORD${brown} record and points to ${blue}$IP${reset}"
+    else
+        echo -e "${brown}No information found for subdomain ${blue}$sub${reset}"
+    fi
 }
 
-domain=$1
-subdomain=$2
-
-if [ -z "$subdomain" ]; then
-    get_record_info $domain www
-    get_record_info $domain lb-01
-    get_record_info $domain web-01
-    get_record_info $domain web-02
+# Main script
+if [ $# -eq 1 ]; then
+    for sub in "${subdomains[@]}"; do
+        dig_cmd "$1" "$sub"
+    done
+elif [ $# -eq 2 ]; then
+    dig_cmd "$1" "$2"
 else
-    get_record_info $domain $subdomain
+    echo "Usage: $0 <domain> [subdomain]"
 fi
+
