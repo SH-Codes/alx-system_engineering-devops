@@ -13,9 +13,10 @@ if __name__ == '__main__':
     todo = requests.get(endpoint + "todos?userId={}".
                         format(userId), verify=False).json()
     completed_tasks = []
+
     for task in todo:
         if task.get('completed') is True:
             completed_tasks.append(task.get('title'))
-    print("Employee {} is done with tasks({}/{}):".
-          format(user.get('name'), len(completed_tasks), len(todo)))
-    print("\n".join("\t {}".format(task) for task in completed_tasks))
+            print("Employee {} is done with tasks({}/{}):".
+                  format(user.get('name'), len(completed_tasks), len(todo)))
+            print("\n".join("\t {}".format(task) for task in completed_tasks))
