@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
-
-# Set the path to the private key file
-private_key="$HOME/.ssh/school"
-chmod 600 ~/.ssh/school
-
-# Define the server address
-server_address="52.73.34.195"
+# Bash script that uses ssh to connect to server
 
 # SSH connection command using single-character flags
-ssh -i "$private_key" ubuntu@"$server_address"
+ssh ubuntu -i ~/.ssh/school
