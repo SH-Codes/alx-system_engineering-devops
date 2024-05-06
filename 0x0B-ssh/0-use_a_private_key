@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
-<<<<<<< HEAD
 # Bash script that uses ssh to connect to server
 
 # SSH connection command using single-character flags
 ssh ubuntu -i ~/.ssh/school
-=======
-# Bash script that uses ssh to connect to your server
-# using the private key ~/.ssh/school with the user "ubunty"
-
-# Define the server address
-server_address="52.73.34.195"
-
-# SSH connection command using single-character flags
-ssh ubuntu@"$server_address" -i ~/.ssh/school
->>>>>>> b2486cdaae0ff596a67ce5167e55393420d41097
