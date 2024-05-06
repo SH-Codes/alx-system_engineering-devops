@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-# Bash script that uses ssh to connect to your server
-# using the private key ~/.ssh/school with the user "ubuntu"
-
-# Define the server address
-server_address="52.73.34.195"
-
-# SSH connection command with debug mode enabled
-ssh -v ubuntu@"$server_address" -i ~/.ssh/school
