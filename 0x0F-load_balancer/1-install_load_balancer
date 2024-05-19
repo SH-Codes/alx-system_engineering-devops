@@ -41,7 +41,7 @@ defaults
 
 frontend wildreams-tech-frontend
     bind *:80
-    default_backend th3gr00t-tech-backend
+    default_backend wildreams-tech-backend
 
 backend wildreams-tech-backend
     balance roundrobin
