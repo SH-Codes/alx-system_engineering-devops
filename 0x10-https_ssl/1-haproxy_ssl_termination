@@ -10,14 +10,14 @@ defaults
 	timeout client  30s
 	timeout server  30s
 
-frontend th3gr00t-tech-frontend
+frontend wildreams-tech-frontend
 	bind *:80
-	bind *:443 ssl crt /etc/haproxy/certs/th3gr00t.tech.pem
+	bind *:443 ssl crt /etc/haproxy/certs/wildreams.tech.pem
 	http-request redirect scheme https unless { ssl_fc }
 	http-request set-header X-Forwarded-Proto https
-	default_backend th3gr00t-tech-backend
+	default_backend wildreams-tech-backend
 
-backend th3gr00t-tech-backend
+backend wildreams-tech-backend
 	balance roundrobin
-	server 498255-web-01 54.146.76.41 check
-	server 498255-web-02 54.208.160.246 check
+	server 498255-web-01 54.91.155.150 check
+	server 498255-web-02 34.207.62.28 check
