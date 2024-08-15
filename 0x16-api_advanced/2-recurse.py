@@ -1,41 +1,35 @@
 #!/usr/bin/python3
+"""
+Using Reddit's API to recursively retrieve hot post titles.
+"""
 
 import requests
 
 
 def recurse(subreddit, hot_list=None, after=None):
-    """
-    Recursively queries the Reddit API and returns a list containing the titles
-    of all hot articles for a given subreddit.
-
-    :param subreddit: The subreddit to query.
-    :param hot_list: A list that accumulates the titles of hot posts.
-    :param after: The "after" parameter for pagination.
-    :return: A list of titles, or None if the subreddit is invalid or empty.
-    """
+    """Returns a list of titles of all hot posts recursively."""
     if hot_list is None:
         hot_list = []
 
+    user_agent = {'User-Agent': 'api_advanced-project'}
     url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    headers = {"User-Agent": "Mozilla/5.0"}
-    params = {"limit": 100, "after": after}
+    params = {'after': after}
 
     try:
-        response = requests.get(url, headers=headers, params=params,
+        response = requests.get(url, params=params, headers=user_agent,
                                 allow_redirects=False)
 
         if response.status_code == 200:
-            data = response.json()
-            posts = data.get('data', {}).get('children', [])
-            after = data.get('data', {}).get('after')
+            data = response.json().get("data", {})
+            after = data.get("after")
+            titles = [
+                    post.get("data", {}).get("title")
+                    for post in data.get("children", [])
+                    ]
 
-            if not posts:
-                return None
+            hot_list.extend(titles)
 
-            for post in posts:
-                hot_list.append(post.get('data', {}).get('title', 'No Title'))
-
-            if after:
+            if after is not None:
                 return recurse(subreddit, hot_list, after)
             else:
                 return hot_list
