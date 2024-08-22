@@ -4,6 +4,10 @@
 """
 import sys
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a46235057e8e5a21cf47637b5deb5dfbdeec9827
 if __name__ == '__main__':
     count_words = __import__('100-count').count_words
     if len(sys.argv) < 3:

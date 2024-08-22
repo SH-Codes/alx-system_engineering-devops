@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+<<<<<<< HEAD
+=======
+
+>>>>>>> a46235057e8e5a21cf47637b5deb5dfbdeec9827
 """ raddit api"""
 
 import json
